@@ -17,3 +17,6 @@ class Tokenizer(PreTrainedTokenizer):
             for n in number:
                 text = text.replace(n, '0')
         return self.tokenizer.tokenize(text)
+
+    def convert_tokens_to_ids(self, tokens):
+        return self.tokenizer.convert_tokens_to_ids(tokens)
