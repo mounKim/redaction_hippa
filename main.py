@@ -8,6 +8,9 @@ from torch.utils.data import DataLoader
 
 
 parser = argparse.ArgumentParser()
+parser.add_argument('--lr', type=float, default=0.01)
+parser.add_argument('--epochs', type=int, default=3)
+parser.add_argument('--device', type=str, default='cpu', help='cpu or gpu')
 parser.add_argument('--word2vec_model', type=str, default='', help='default means training word2vec')
 parser.add_argument('--word2vec_min_count', type=int, default=5, help='word2vec embedding min count')
 parser.add_argument('--tokenizer', type=str, default='bert')
