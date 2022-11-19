@@ -1,5 +1,23 @@
+import os
 import torch
+import xml.etree.ElementTree as elemTree
+
+from label import *
 from gensim.models import Word2Vec
+
+
+def preprocess_i2b2_2014(path):
+    texts = []
+    labels = []
+    for data in os.listdir(path):
+        tree = elemTree.parse(os.path.join(path, data))
+        texts.append(tree.findall('TEXT')[0].text)
+        label = []
+        for tag in tree.findall('TAGS')[0]:
+            tmp = tag.get('TYPE')
+            label.append(Label(tmp, tag.get('start'), tag.get('end')))
+        labels.append(label)
+    return texts, labels
 
 
 def casing_features(tokens):
@@ -24,7 +42,7 @@ def spacing_features(sentence, tokenize_sentence):
         size = len(token)
         feature = 0
         while True:
-            if sentence[pointer:pointer+size] == token:
+            if sentence[pointer:pointer + size] == token:
                 pointer += size
                 features.append(feature)
                 break
