@@ -11,7 +11,7 @@ def preprocess_i2b2_2014(path):
     labels = []
     for data in os.listdir(path):
         tree = elemTree.parse(os.path.join(path, data))
-        texts.append(tree.findall('TEXT')[0].text)
+        texts.append(tree.findall('TEXT')[0].text.strip())
         label = []
         for tag in tree.findall('TAGS')[0]:
             tmp = tag.get('TYPE')
@@ -32,9 +32,18 @@ def casing_features(tokens):
     return torch.Tensor(features)
 
 
+def token_normalization(text):
+    text = text.lower()
+    number = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+    for n in number:
+        text = text.replace(n, '0')
+    return text
+
+
 def spacing_features(sentence, tokenize_sentence):
     features = [0]
     sentence = sentence.replace('\n', ' ')
+    sentence = token_normalization(sentence)
     pointer = len(tokenize_sentence[0])
     for token in tokenize_sentence[1:]:
         if token.startswith('##'):

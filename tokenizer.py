@@ -1,3 +1,4 @@
+from utils import *
 from transformers import BertTokenizer, PreTrainedTokenizer
 
 
@@ -10,13 +11,7 @@ class Tokenizer(PreTrainedTokenizer):
         self.all_zero = all_zero
 
     def tokenize(self, text, **kwargs):
-        if self.lower:
-            text = text.lower()
-        if self.all_zero:
-            number = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-            for n in number:
-                text = text.replace(n, '0')
-        return self.tokenizer.tokenize(text)
+        return self.tokenizer.tokenize(token_normalization(text))
 
     def convert_tokens_to_ids(self, tokens):
         return self.tokenizer.convert_tokens_to_ids(tokens)
