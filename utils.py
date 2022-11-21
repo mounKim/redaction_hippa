@@ -6,12 +6,22 @@ from label import *
 from gensim.models import Word2Vec
 
 
+def token_normalization(text):
+    text = text.lower()
+    number = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+    for n in number:
+        text = text.replace(n, '0')
+    return text
+
+
 def preprocess_i2b2_2014(path):
     texts = []
     labels = []
     for data in os.listdir(path):
         tree = elemTree.parse(os.path.join(path, data))
-        texts.append(tree.findall('TEXT')[0].text.strip())
+        sentence = tree.findall('TEXT')[0].text
+        sentence = sentence.replace('\n', ' ')
+        texts.append(token_normalization(sentence))
         label = []
         for tag in tree.findall('TAGS')[0]:
             tmp = tag.get('TYPE')
@@ -29,35 +39,43 @@ def casing_features(tokens):
             features.append(1)
         else:
             features.append(2)
-    return torch.Tensor(features)
+    return features
 
 
-def token_normalization(text):
-    text = text.lower()
-    number = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-    for n in number:
-        text = text.replace(n, '0')
-    return text
+def make_label(token_pos, labels):
+    pos = 0
+    label_list = []
+    for label in labels:
+        while pos < len(token_pos) and token_pos[pos] < label.start:
+            label_list.append(0)
+            pos += 1
+        while pos < len(token_pos) and label.start <= token_pos[pos] <= label.end:
+            if label.tag is None:
+                label_list.append(0)
+            else:
+                label_list.append(label.tag.value)
+            pos += 1
+    return label_list
 
 
 def spacing_features(sentence, tokenize_sentence):
-    features = [0]
-    sentence = sentence.replace('\n', ' ')
-    sentence = token_normalization(sentence)
-    pointer = len(tokenize_sentence[0])
-    for token in tokenize_sentence[1:]:
+    features = []
+    start_pos = []
+    pointer = 0
+    for token in tokenize_sentence:
         if token.startswith('##'):
             token = token[2:]
         size = len(token)
         feature = 0
         while True:
             if sentence[pointer:pointer + size] == token:
-                pointer += size
                 features.append(feature)
+                start_pos.append(pointer)
+                pointer += size
                 break
             pointer += 1
             feature += 1
-    return torch.Tensor(features)
+    return features, start_pos
 
 
 def tokenize_alldata(dataset, tokenizer):

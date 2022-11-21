@@ -25,8 +25,8 @@ class PHI(Enum):
 
 class Label:
     def __init__(self, tag, start, end):
-        self.start = start
-        self.end = end
+        self.start = int(start)
+        self.end = int(end)
         self.i2b2_2014 = {
             'DATE': PHI.Date,
             'DOCTOR': PHI.Name,

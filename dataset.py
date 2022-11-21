@@ -12,16 +12,20 @@ class ClinicalDataset(data.Dataset):
 
     def __getitem__(self, index):
         sentence = self.data_list[index]
+        label = self.label_list[index]
         tokenize_sentence = self.tokenizer.tokenize(sentence)
+        spacing_feature, label_feature = spacing_features(sentence, tokenize_sentence)
         word2vec_sentence = []
         for token in tokenize_sentence:
             if token in self.word2vec_model.wv.key_to_index.keys():
-                word2vec_sentence.append(torch.Tensor(self.word2vec_model.wv[token].copy()))
+                word2vec_sentence.append(self.word2vec_model.wv[token].copy())
             else:
-                word2vec_sentence.append(torch.Tensor([0.] * 250))
+                word2vec_sentence.append([0.] * 200)
         # character birnn (25)
-        return torch.cat([word2vec_sentence, casing_features(tokenize_sentence),
-                          spacing_features(sentence, tokenize_sentence)], 1), self.label_list[index]
+        return torch.cat([torch.Tensor(word2vec_sentence),
+                          torch.Tensor(casing_features(tokenize_sentence)).unsqueeze(1),
+                          torch.Tensor(spacing_feature).unsqueeze(1)
+                          ], 1), torch.Tensor(make_label(label_feature, label))
 
     def __len__(self):
         return len(self.data_list)

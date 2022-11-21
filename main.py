@@ -25,6 +25,8 @@ i2b2_2014_texts_test, i2b2_2014_labels_test = preprocess_i2b2_2014('./data/i2b2-
 label = [i2b2_2014_labels_train]
 labeled_data = [i2b2_2014_texts_train]
 unlabeled_data = [i2b2_2014_texts_train]
+test_data = [i2b2_2014_texts_test]
+test_label = [i2b2_2014_labels_test]
 
 tokenizer = Tokenizer(args.tokenizer)
 if args.word2vec_model == '':
@@ -40,6 +42,6 @@ if args.mode == 'train':
     train_dataloader = DataLoader(train_dataset, batch_size=args.batch)
     train(model, args, train_dataloader)
 else:
-    test_dataset = ClinicalDataset(i2b2_2014_texts_test, i2b2_2014_labels_test, tokenizer, word2vec)
+    test_dataset = ClinicalDataset(sum(test_data, []), sum(test_label, []), tokenizer, word2vec)
     test_dataloader = DataLoader(test_dataset, batch_size=args.batch)
     predict(model, args, test_dataloader)
