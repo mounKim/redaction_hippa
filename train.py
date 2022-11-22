@@ -6,7 +6,6 @@ from tqdm import tqdm
 
 
 def train(model, args, dataloader):
-    loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adagrad(model.parameters(), lr=args.lr)
     model.train()
 
@@ -17,8 +16,7 @@ def train(model, args, dataloader):
             optimizer.zero_grad()
             batch = tuple(t.to(args.device) for t in batch)
             b_inputs, b_labels = batch
-            out = model(b_inputs)
-            loss = loss_fn(out, b_labels)
+            loss = model(b_inputs, b_labels)
             loss.backward()
             train_loss.append(loss.item())
             optimizer.step()

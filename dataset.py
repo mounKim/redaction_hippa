@@ -1,3 +1,4 @@
+import numpy as np
 import torch.utils.data as data
 from utils import *
 
@@ -22,10 +23,10 @@ class ClinicalDataset(data.Dataset):
             else:
                 word2vec_sentence.append([0.] * 200)
         # character birnn (25)
-        return torch.cat([torch.Tensor(word2vec_sentence),
-                          torch.Tensor(casing_features(tokenize_sentence)).unsqueeze(1),
-                          torch.Tensor(spacing_feature).unsqueeze(1)
-                          ], 1), torch.Tensor(make_label(label_feature, label))
+        return torch.cat([torch.tensor(np.array(word2vec_sentence), dtype=torch.float32),
+                          torch.tensor(np.array(casing_features(tokenize_sentence))).unsqueeze(1),
+                          torch.tensor(np.array(spacing_feature)).unsqueeze(1)
+                          ], 1), torch.LongTensor(make_label(label_feature, label))
 
     def __len__(self):
         return len(self.data_list)

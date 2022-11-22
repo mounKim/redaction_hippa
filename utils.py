@@ -49,12 +49,13 @@ def make_label(token_pos, labels):
         while pos < len(token_pos) and token_pos[pos] < label.start:
             label_list.append(0)
             pos += 1
-        while pos < len(token_pos) and label.start <= token_pos[pos] <= label.end:
+        while pos < len(token_pos) and label.start <= token_pos[pos] < label.end:
             if label.tag is None:
                 label_list.append(0)
             else:
                 label_list.append(label.tag.value)
             pos += 1
+    label_list.extend([0] * (len(token_pos) - len(label_list)))
     return label_list
 
 
