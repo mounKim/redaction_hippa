@@ -23,10 +23,10 @@ class ClinicalDataset(data.Dataset):
             else:
                 word2vec_sentence.append([0.] * 200)
         # character birnn (25)
-        return torch.cat([torch.tensor(np.array(word2vec_sentence), dtype=torch.float32),
-                          torch.tensor(np.array(casing_features(tokenize_sentence))).unsqueeze(1),
-                          torch.tensor(np.array(spacing_feature)).unsqueeze(1)
-                          ], 1), torch.LongTensor(make_label(label_feature, label))
+        return {'input': torch.cat([torch.tensor(np.array(word2vec_sentence), dtype=torch.float32),
+                                    torch.tensor(np.array(casing_features(tokenize_sentence))).unsqueeze(1),
+                                    torch.tensor(np.array(spacing_feature)).unsqueeze(1)
+                                    ], 1), 'label': torch.LongTensor(make_label(label_feature, label))}
 
     def __len__(self):
         return len(self.data_list)

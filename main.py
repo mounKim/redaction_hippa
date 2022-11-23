@@ -40,9 +40,9 @@ print('model is loaded')
 
 if args.mode == 'train':
     train_dataset = ClinicalDataset(sum(labeled_data, []), sum(label, []), tokenizer, word2vec)
-    train_dataloader = DataLoader(train_dataset, batch_size=args.batch)
+    train_dataloader = DataLoader(train_dataset, batch_size=args.batch, collate_fn=my_collate)
     train(model, args, train_dataloader)
 else:
     test_dataset = ClinicalDataset(sum(test_data, []), sum(test_label, []), tokenizer, word2vec)
-    test_dataloader = DataLoader(test_dataset, batch_size=args.batch)
+    test_dataloader = DataLoader(test_dataset, batch_size=args.batch, collate_fn=my_collate)
     predict(model, args, test_dataloader)

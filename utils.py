@@ -6,6 +6,14 @@ from label import *
 from gensim.models import Word2Vec
 
 
+def my_collate(samples):
+    inputs = [sample['input'] for sample in samples]
+    labels = [sample['label'] for sample in samples]
+    pad_inputs = torch.nn.utils.rnn.pad_sequence(inputs, batch_first=True)
+    pad_labels = torch.nn.utils.rnn.pad_sequence(labels, batch_first=True, padding_value=-1)
+    return pad_inputs, pad_labels
+
+
 def token_normalization(text):
     text = text.lower()
     number = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
