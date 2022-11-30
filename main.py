@@ -14,6 +14,7 @@ parser.add_argument('--mode', type=str, default='train')
 parser.add_argument('--epochs', type=int, default=3)
 parser.add_argument('--batch', type=int, default=1)
 parser.add_argument('--maxlen', type=int, default=200)
+parser.add_argument('--dataset_path', type=str, default='')
 parser.add_argument('--device', type=str, default='cpu', help='cpu or gpu')
 parser.add_argument('--word2vec_model', type=str, default='', help='default means training word2vec')
 parser.add_argument('--word2vec_min_count', type=int, default=5, help='word2vec embedding min count')
@@ -21,8 +22,9 @@ parser.add_argument('--tokenizer', type=str, default='bert')
 args = parser.parse_args()
 print(args)
 
-i2b2_2014_texts_train, i2b2_2014_labels_train = preprocess_i2b2_2014('./data/i2b2-2014/train')
-i2b2_2014_texts_test, i2b2_2014_labels_test = preprocess_i2b2_2014('./data/i2b2-2014/test/test_answer')
+i2b2_2014_texts_train, i2b2_2014_labels_train = preprocess_i2b2_2014(os.path.join(args.dataset_path, 'i2b2-2014/train'))
+i2b2_2014_texts_test, i2b2_2014_labels_test = preprocess_i2b2_2014(os.path.join(args.dataset_path,
+                                                                                'i2b2-2014/test/test_answer'))
 label = [i2b2_2014_labels_train]
 labeled_data = [i2b2_2014_texts_train]
 unlabeled_data = [i2b2_2014_texts_train]
