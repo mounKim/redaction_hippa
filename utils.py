@@ -72,6 +72,10 @@ def spacing_features(sentence, tokenize_sentence):
     start_pos = []
     pointer = 0
     for token in tokenize_sentence:
+        if token == '#' or token == '[UNK]':
+            features.append(0)
+            start_pos.append(pointer)
+            continue
         if token.startswith('##'):
             token = token[2:]
         size = len(token)
