@@ -1,3 +1,4 @@
+import torch
 import torchcrf
 import torch.nn as nn
 
@@ -15,4 +16,5 @@ class OurModel(nn.Module):
         x = self.tag_predict(x[0])
         x = self.softmax(x)
         x = self.crf.decode(x)
-        return x
+
+        return torch.Tensor(x)

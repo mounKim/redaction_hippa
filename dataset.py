@@ -26,7 +26,7 @@ class ClinicalDataset(data.Dataset):
         return {'input': torch.cat([torch.tensor(np.array(word2vec_sentence), dtype=torch.float32),
                                     torch.tensor(np.array(casing_features(tokenize_sentence))).unsqueeze(1),
                                     torch.tensor(np.array(spacing_feature)).unsqueeze(1)
-                                    ], 1), 'label': torch.LongTensor(make_label(label_feature, label))}
+                                    ], 1), 'label': torch.Tensor(make_label(label_feature, label))}
 
     def __len__(self):
         return len(self.data_list)

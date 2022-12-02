@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 
 def train(model, args, dataloader):
-    loss_fn = nn.CrossEntropyLoss(reduction='sum')
+    loss_fn = nn.CrossEntropyLoss(reduction='mean')
     optimizer = torch.optim.Adagrad(model.parameters(), lr=args.lr)
     model.train()
 
@@ -35,7 +35,7 @@ def predict(model, args, dataloader):
     for step, batch in tqdm(enumerate(dataloader)):
         batch = tuple(t.to(args.device) for t in batch)
         with torch.no_grad():
-            out = model(batch, training=False)
+            out = model(batch)
         predict_labels.append(out)
 
     predict_labels = torch.cat(predict_labels).tolist()
