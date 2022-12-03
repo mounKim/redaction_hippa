@@ -1,24 +1,21 @@
 import torch
 import numpy as np
-import torch.nn as nn
 
 from tqdm import tqdm
 
 
 def train(model, args, dataloader):
-    loss_fn = nn.CrossEntropyLoss(reduction='mean')
     optimizer = torch.optim.Adagrad(model.parameters(), lr=args.lr)
     model.train()
 
     print('start training')
     for epoch in range(args.epochs):
         train_loss = []
-        for step, batch in enumerate(dataloader):
+        for step, batch in tqdm(enumerate(dataloader)):
             optimizer.zero_grad()
             batch = tuple(t.to(args.device) for t in batch)
             b_inputs, b_labels = batch
-            out = model(b_inputs)
-            loss = loss_fn(out, b_labels)
+            loss = model(b_inputs, b_labels)
             loss.backward()
             train_loss.append(loss.item())
             optimizer.step()

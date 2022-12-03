@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 parser = argparse.ArgumentParser()
 parser.add_argument('--lr', type=float, default=0.01)
 parser.add_argument('--mode', type=str, default='train')
-parser.add_argument('--epochs', type=int, default=3)
+parser.add_argument('--epochs', type=int, default=10)
 parser.add_argument('--batch', type=int, default=20)
 parser.add_argument('--dataset_path', type=str, default='data')
 parser.add_argument('--device', type=str, default='cpu', help='cpu or gpu')
@@ -36,7 +36,7 @@ if args.word2vec_model == '':
 else:
     word2vec = Word2Vec.load(args.word2vec_model)
 
-model = OurModel().to(args.device)
+model = OurModel(reduction='token_mean').to(args.device)
 print('model is loaded')
 
 if args.mode == 'train':
