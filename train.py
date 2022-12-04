@@ -24,7 +24,6 @@ def train(model, args, dataloader):
             predict_label.append(label)
             real_label.append(b_label)
             optimizer.step()
-            break
 
         predict_label = torch.cat(predict_label).tolist()
         real_label = torch.cat(real_label).tolist()
