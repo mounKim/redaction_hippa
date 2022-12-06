@@ -4,12 +4,16 @@ import torch.nn as nn
 
 
 class OurModel(nn.Module):
-    def __init__(self, reduction='sum'):
+    def __init__(self, args, reduction='sum'):
         super(OurModel, self).__init__()
         self.token_birnn = nn.RNN(202, 100, bidirectional=True)
-        self.tag_predict = nn.Linear(200, 19)
         self.softmax = nn.Softmax(dim=2)
-        self.crf = torchcrf.CRF(19, batch_first=True)
+        if args.rigid_labeling:
+            self.tag_predict = nn.Linear(200, 19)
+            self.crf = torchcrf.CRF(19, batch_first=True)
+        else:
+            self.tag_predict = nn.Linear(200, 4)
+            self.crf = torchcrf.CRF(4, batch_first=True)
         self.reduction = reduction
 
     def forward(self, x, y):

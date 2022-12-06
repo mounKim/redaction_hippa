@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--lr', type=float, default=0.01)
 parser.add_argument('--mode', type=str, default='train')
 parser.add_argument('--epochs', type=int, default=10)
+parser.add_argument('--rigid_labeling', type=bool, default=False, help='if false, labeling only name/date/location')
 parser.add_argument('--batch', type=int, default=20)
 parser.add_argument('--dataset_path', type=str, default='data')
 parser.add_argument('--device', type=str, default='cpu', help='cpu or gpu')
@@ -21,14 +22,18 @@ parser.add_argument('--tokenizer', type=str, default='bert')
 args = parser.parse_args()
 print(args)
 
-i2b2_2014_texts_train, i2b2_2014_labels_train = preprocess_i2b2_2014(os.path.join(args.dataset_path, 'i2b2-2014/train'))
-i2b2_2014_texts_test, i2b2_2014_labels_test = preprocess_i2b2_2014(os.path.join(args.dataset_path,
-                                                                                'i2b2-2014/test/test_answer'))
+i2b2_2014_texts_train, i2b2_2014_labels_train = preprocess_i2b2_2014(
+    os.path.join(args.dataset_path, 'i2b2-2014/train'), args.rigid_labeling)
+i2b2_2014_texts_test, i2b2_2014_labels_test = preprocess_i2b2_2014(
+    os.path.join(args.dataset_path, 'i2b2-2014/test/test_answer'), args.rigid_labeling)
+
 label = [i2b2_2014_labels_train]
 labeled_data = [i2b2_2014_texts_train]
 unlabeled_data = [i2b2_2014_texts_train]
-test_data = [i2b2_2014_texts_test]
-test_label = [i2b2_2014_labels_test]
+val_data = [i2b2_2014_texts_test[:250]]
+val_label = [i2b2_2014_labels_test[:250]]
+test_data = [i2b2_2014_texts_test[250:]]
+test_label = [i2b2_2014_labels_test[250:]]
 
 tokenizer = Tokenizer(args.tokenizer)
 if args.word2vec_model == '':
@@ -36,13 +41,15 @@ if args.word2vec_model == '':
 else:
     word2vec = Word2Vec.load(args.word2vec_model)
 
-model = OurModel(reduction='token_mean').to(args.device)
+model = OurModel(args, reduction='token_mean').to(args.device)
 print('model is loaded')
 
 if args.mode == 'train':
     train_dataset = ClinicalDataset(sum(labeled_data, []), sum(label, []), tokenizer, word2vec)
+    val_dataset = ClinicalDataset(sum(val_data, []), sum(val_label, []), tokenizer, word2vec)
     train_dataloader = DataLoader(train_dataset, batch_size=args.batch, collate_fn=my_collate)
-    train(model, args, train_dataloader)
+    val_dataloader = DataLoader(val_dataset, batch_size=args.batch, collate_fn=my_collate)
+    train(model, args, train_dataloader, val_dataloader)
 else:
     test_dataset = ClinicalDataset(sum(test_data, []), sum(test_label, []), tokenizer, word2vec)
     test_dataloader = DataLoader(test_dataset, batch_size=args.batch, collate_fn=my_collate)

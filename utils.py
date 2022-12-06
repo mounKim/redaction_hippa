@@ -22,7 +22,7 @@ def token_normalization(text):
     return text
 
 
-def preprocess_i2b2_2014(path):
+def preprocess_i2b2_2014(path, rigid):
     texts = []
     labels = []
     for data in os.listdir(path):
@@ -33,7 +33,8 @@ def preprocess_i2b2_2014(path):
         label = []
         for tag in tree.findall('TAGS')[0]:
             tmp = tag.get('TYPE')
-            label.append(Label(tmp, tag.get('start'), tag.get('end')))
+            if is_i2b2_2014(tmp, rigid):
+                label.append(Label(tmp, tag.get('start'), tag.get('end')))
         labels.append(label)
     return texts, labels
 

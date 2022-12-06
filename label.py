@@ -23,11 +23,7 @@ class PHI(Enum):
     Other = 18
 
 
-class Label:
-    def __init__(self, tag, start, end):
-        self.start = int(start)
-        self.end = int(end)
-        self.i2b2_2014 = {
+i2b2_2014 = {
             'DATE': PHI.Date,
             'DOCTOR': PHI.Name,
             'HOSPITAL': PHI.Address,
@@ -37,6 +33,8 @@ class Label:
             'CITY': PHI.Address,
             'STATE': PHI.Address,
             'PHONE': PHI.Phone,
+            'USERNAME': PHI.Other,
+            'IDNUM': PHI.Other,
             'PROFESSION': PHI.Other,
             'STREET': PHI.Address,
             'ZIP': PHI.Address,
@@ -45,9 +43,29 @@ class Label:
             'FAX': PHI.Fax,
             'DEVICE': PHI.Device,
             'EMAIL': PHI.Email,
-            'URL': PHI.URL
+            'LOCATION-OTHER': PHI.Other,
+            'URL': PHI.URL,
+            'BIOID': PHI.Other,
+            'HEALTHPLAN': PHI.Other
         }
-        self.tag = self.change_to_enum(tag)
 
-    def change_to_enum(self, tag):
-        return self.i2b2_2014.get(tag)
+
+def is_i2b2_2014(tag, rigid):
+    if rigid:
+        if tag in i2b2_2014.keys():
+            return True
+    else:
+        if i2b2_2014[tag] in [PHI.Name, PHI.Address, PHI.Date]:
+            return True
+    return False
+
+
+def change_to_enum(tag):
+    return i2b2_2014.get(tag)
+
+
+class Label:
+    def __init__(self, tag, start, end):
+        self.start = int(start)
+        self.end = int(end)
+        self.tag = change_to_enum(tag)
