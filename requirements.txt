@@ -2,3 +2,4 @@ transformers
 gensim
 tqdm
 pytorch-crf
+pyneuroner[gpu]

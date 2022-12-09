@@ -4,12 +4,12 @@ from utils import *
 
 
 class ClinicalDataset(data.Dataset):
-    def __init__(self, data_list, label_list, tokenizer, word2vec_model):
+    def __init__(self, data_list, label_list, tokenizer, glove_model):
         super(ClinicalDataset, self).__init__()
         self.data_list = data_list
         self.label_list = label_list
         self.tokenizer = tokenizer
-        self.word2vec_model = word2vec_model
+        self.glove_model = glove_model
 
     def __getitem__(self, index):
         sentence = self.data_list[index]
@@ -17,9 +17,10 @@ class ClinicalDataset(data.Dataset):
         tokenize_sentence = self.tokenizer.tokenize(sentence)
         spacing_feature, label_feature = spacing_features(sentence, tokenize_sentence)
         word2vec_sentence = []
+        char_birnn_sentence = []
         for token in tokenize_sentence:
-            if token in self.word2vec_model.wv.key_to_index.keys():
-                word2vec_sentence.append(self.word2vec_model.wv[token].copy())
+            if token in self.glove_model.keys():
+                word2vec_sentence.append(self.glove_model[token])
             else:
                 word2vec_sentence.append([0.] * 200)
         # character birnn (25)
